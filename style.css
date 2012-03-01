@@ -141,3 +141,10 @@ input.examples {
     font-family: monospace;
     font-size: 90%;
 }
+
+a#download {
+    padding: 3px 8px;
+    display: inline-block;
+/*     margin-left: 10px; */
+    margin-bottom: 10px;
+}
