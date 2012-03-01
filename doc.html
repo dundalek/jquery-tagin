@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>jQuery Tagin plugin: Documentation</title>
+
+    <!-- include jQuery, jQuery UI -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+    <!-- syntax highlighting - only for purpose of demos -->
+    <script src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
+    <link rel="stylesheet" href="http://yandex.st/highlightjs/6.1/styles/github.min.css">
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script>
+        $(function() {
+            // highlight source code
+            $('pre code').addClass('javascript').each(function() {
+                hljs.highlightBlock(this);
+            });
+        });
+    </script>
+  </head>
+  <body>
+<div id="main">
+
+<div id="header">
+    <ul id="menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="examples.html">Examples</a></li>
+        <li class="active"><a href="doc.html">Documentation</a></li>
+        <li><a href="#">Download</a></li>
+    </ul>
+    <h1>jQuery&nbsp;&nbsp;Tagin</h1>
+</div>
+
+<div id="content">
+
+    <h2>Options</h2>
+
+    <pre class="sample"><code>$('#selector').tagin({
+    // tag delimiter
+    delimiter: ' ',
+
+    // create new tag when delimiter key is pressed
+    delimiterCreateTag: true,
+
+    // if false only tags can be inserted
+    allowTextInput: false,
+
+    // if false only tags from autocomplete can be inserted
+    allowNewTags: true,
+
+    // allowed characters of tag (no restrictions by default)
+    // example for alphanumeric values: /[-a-zA-Z0-9]/g
+    allowedChars: null,
+
+    // function for transforming tag value, it can be:
+    // - name of String method (like 'toLowerCase' 'toUpperCase')
+    // - or regular function
+    transformFunction: null,
+
+    // array of tags for autocomplete
+    availableTags: null,
+
+    // function for autocomplete tagSource(term, callback)
+    tagSource: null,
+
+    // options for autocomplete
+    // see http://jqueryui.com/demos/autocomplete/#options
+    autocomplete: {
+        autoFocus: true
+    },
+
+    // do animation when removing tag
+    animate: true
+});</code></pre>
+
+    <h2>Methods</h2>
+
+    <pre class="sample"><code>createTag(string)
+    $('#selector').tagin('createTag', 'abc');
+
+removeTag(string or number)
+    $('#selector').tagin('removeTag', 'abc');
+    $('#selector').tagin('removeTag', 0); // remove first tag
+
+clear // remove all tags and inputs
+    $('#selector').tagin('clear');
+
+tags(array) // set tags
+    $('#selector').tagin('tags', ['foo', 'bar']);
+
+tags // get assigned tags
+    var assigned = $('#selector').tagin('tags');
+    // tags will be ['foo', 'bar']
+
+inputs(array) // set input values
+    $('#selector').tagin('inputs', ['text']);
+
+inputs // get input values
+    $('#selector').tagin('inputs');
+
+focus // focus input
+    $('#selector').tagin('focus');
+
+blur // blur input
+    $('#selector').tagin('blur');</code></pre>
+
+    <h2>Events</h2>
+    <p><p>
+
+    <pre class="sample"><code>change
+tag-removed
+tag-created
+focus
+blur
+keydown
+keypress
+keyup</code></pre>
+
+
+</div>
+
+</div>
+  </body>
+</html>

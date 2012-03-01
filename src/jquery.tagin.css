@@ -1,0 +1,51 @@
+ul.tagin {
+    padding: 1px 5px;
+    overflow: auto;
+    margin: 0;
+    min-width: 300px;
+    display: inline-block;
+
+    /* hack for IE6 - fixed width */
+    _width: 500px;
+}
+ul.tagin li {
+    display: block;
+    float: left;
+    margin: 2px 0;
+}
+ul.tagin li:first-child {
+    margin-left: -6px;
+}
+ul.tagin li.tagin-tag {
+    padding: .2em 18px .2em .5em;
+    position: relative;
+    line-height: inherit;
+}
+ul.tagin li.tagin-input {
+    padding: .25em 0;
+}
+
+ul.tagin li.tagin-tag a.tagin-label {
+    cursor: pointer;
+    text-decoration: none;
+}
+ul.tagin li.tagin-tag .tagin-close {
+    cursor: pointer;
+    position: absolute;
+    right: .1em;
+    top: 50%;
+    margin-top: -8px;
+}
+ul.tagin li.tagin-tag .tagin-close .text-icon {
+    display: none;
+}
+ul.tagin input {
+    border: none;
+    margin: 0;
+    background: transparent;
+    outline: none;
+    padding-top: 0;
+    padding-right: 1px;
+    padding-bottom: 0;
+    padding-left: 2px;
+}

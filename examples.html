@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>jQuery Tagin plugin: Examples</title>
+
+    <!-- include jQuery, jQuery UI -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" ></script>
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/sunny/jquery-ui.css">
+
+    <!-- include tagin library -->
+    <script type="text/javascript" src="src/jquery.tagin.js"></script>
+    <link rel="stylesheet" type="text/css" href="src/jquery.tagin.css">
+
+    <!-- syntax highlighting - only for purpose of demos -->
+    <script src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
+    <link rel="stylesheet" href="http://yandex.st/highlightjs/6.1/styles/github.min.css">
+
+    <!-- theme swither - only for purpose of demos -->
+    <script type="text/javascript" src="http://jqueryui.com/themeroller/themeswitchertool/"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script>
+        $(function() {
+
+            // init theme switcher
+            $('#switcher').themeswitcher({
+                height: 500,
+                loadTheme: 'sunny',
+                onSelect: function() {
+                    // hack to fix input field expanding when changing styles.. this is only for demo purposes, it is not needed in production
+                    setTimeout(function() {
+                        $('input').each(function() {
+                            var tagin = $(this).data('tagin');
+                            if (tagin) {
+                                for (var i = 0; i < tagin.items.length; i+=2) {
+                                    tagin.items[i]._setWidthTesterStyle(tagin.items[i].widthTester);
+                                }
+                            }
+                        });
+                    }, 2000);
+                }
+            });
+
+            // make examples live
+//             $('pre.example code').each(function() {
+//                 eval($(this).text());
+//             });
+
+// $('pre.example').map(function() {return $(this).text();}).get().join('\n\n');
+// ----------- examples
+
+$('input#tags1').tagin({
+    availableTags: ['C++', 'PHP', 'Python', 'Java', 'JavaScript', 'Ruby', 'bash']
+    //, allowNewTags: false //  user can insert only tags from autocomplete
+});
+
+$('#tags3')
+    .tagin({
+        allowTextInput: true
+    })
+    .on('change tag-removed tag-created',
+        function(event) {
+            $('#example-log').append(event.type+' ')
+    });
+
+$('#tags4').tagin({
+    delimiter: ',',
+    transformFunction: 'toUpperCase'
+        // or for example: function(tag) {return '*'+tag+'*';}
+});
+
+$('#tags5')
+    .tagin({
+        allowTextInput: true,
+        delimiterCreateTag: false,
+        allowedChars: /[-a-zA-Z0-9]/g,
+        transformFunction: 'toLowerCase'
+    })
+    .on('change', function() {
+        var tags, query;
+        tags = $(this).tagin('tags');
+        tags.unshift('');
+        query = $(this).tagin('inputs').join(' ').replace(/\s+/g, ' ') + tags.join(' #');
+        $('#tags7-output').text(query);
+    })
+    .tagin('tags', ['javascript', 'php']).tagin('inputs', ['OOP tutorial']);
+
+$('#tags6')
+    .tagin()
+    .data('tagin').element.width(300);
+
+// ----------- end of examples
+
+
+            // init interactive example
+            $('#tags2').tagin();
+            $('code.example').each(function() {
+                var input = $('<input type="text" class="examples">').val($(this).text()),
+                    button = $('<input type="button" value="run">').click(function() {
+                        eval($(this).prev().val());
+                    });
+                    button.insertAfter(this);
+                    input.insertAfter(this);
+                    $(this).hide();
+
+            });
+
+            // highlight source code
+            $('pre code').addClass('javascript').each(function() {
+                hljs.highlightBlock(this);
+            });
+        });
+    </script>
+  </head>
+  <body>
+<div id="main">
+
+<div id="header">
+    <ul id="menu">
+        <li><a href="index.html">Home</a></li>
+        <li class="active"><a href="examples.html">Examples</a></li>
+        <li><a href="doc.html">Documentation</a></li>
+        <li><a href="#">Download</a></li>
+    </ul>
+    <h1>jQuery&nbsp;&nbsp;Tagin</h1>
+</div>
+
+<div id="content">
+
+    <p><span class="switcher-label">You can choose different themes:&nbsp;</span><span id="switcher"></span></p>
+    <br style="clear:both">
+
+    <h2>Basic usage with autocomplete</h2>
+    <p>Attach tagin to input element. Tags are separated by space by default. Initial value from input will be converted to tags. To use autocomplete specify array of tags with <code>availableTags</code> option.<p>
+
+    <input type="text" id="tags1" value="C++ Ruby">
+    <pre class="example"><code>// HTML: &lt;input type="text" id="tags1" value="C++ Ruby"&gt;
+
+$('input#tags1').tagin({
+    availableTags: ['C++', 'PHP', 'Python', 'Java', 'JavaScript', 'Ruby', 'bash']
+    //, allowNewTags: false //  user can insert only tags from autocomplete
+});</code></pre>
+    <p>You can also use <code>tagSource(term, callback)</code> to specify function that returns data, for example for loading data from remote server with ajax.</p>
+    <pre class="sample"><code>$('input#tags1').tagin({
+    tagSource: function(term, callback) {
+        // example ajax call
+        $.get('http://somesite.com?serch='+term, function(data) {
+            // return data to the autocomplete component
+            callback(data);
+        });
+    }
+});</code></pre>
+
+    <h2>Programmatic interaction</h2>
+
+    <p>You can use various methods to interact with widget.</p>
+
+    <input type="text" id="tags2" value="php java">
+
+    <table>
+    <tr>
+        <td>Create new tag: </td>
+        <td><code class="example">$('#tags2').tagin('createTag', 'abc');</code></td>
+    </tr>
+    <tr>
+        <td>Remove tag: </td>
+        <td><code class="example">$('#tags2').tagin('removeTag', 'java');</code></td>
+    </tr>
+    <tr>
+        <td>Set tags: </td>
+        <td><code class="example">$('#tags2').tagin('tags', ['python', 'java']);</code></td>
+    </tr>
+    <tr>
+        <td>Get tags: </td>
+        <td><code class="example">alert($('#tags2').tagin('tags'));</code></td>
+    </tr>
+    <tr>
+        <td>Clear values: </td>
+        <td><code class="example">$('#tags2').tagin('clear');</code></td>
+    </tr>
+    </table>
+
+    <h2>Events</h2>
+
+    <p>You can attach handlers to events using regular jQuery binding mechanism.<br>Available events are: <code>change tag-removed tag-created focus blur keydown keyup keypress</code>.</p>
+
+    <input type="text" id="tags3" value="php java">
+
+    <pre class="example"><code>$('#tags3')
+    .tagin({
+        allowTextInput: true
+    })
+    .on('change tag-removed tag-created',
+        function(event) {
+            $('#example-log').append(event.type+' ')
+    });</code></pre>
+
+    <div id="example-log"></div>
+
+    <h2>Tag transformation</h2>
+
+    <p>If you want tags to include spaces, you can change <code>delimiter</code> for example to comma.<br>
+    To transform tag set <code>transformFunction</code> option to name of the String method or regular function.
+    </p>
+    <input type="text" id="tags4" value="tag with space, another tag">
+    <pre class="example"><code>$('#tags4').tagin({
+    delimiter: ',',
+    transformFunction: 'toUpperCase'
+        // or for example: function(tag) {return '*'+tag+'*';}
+});</code></pre>
+
+    <h2>Search query input with tags</h2>
+    <p>This is the main reason why I creted this plugin because i couldn't find other plugin that would be able to do this.</p>
+
+    <input type="text" id="tags5">
+    <p>Query: <span id="tags7-output">&nbsp;</span></p>
+
+    <pre class="example"><code>$('#tags5')
+    .tagin({
+        allowTextInput: true,
+        delimiterCreateTag: false,
+        allowedChars: /[-a-zA-Z0-9]/g,
+        transformFunction: 'toLowerCase'
+    })
+    .on('change', function() {
+        var tags, query;
+        tags = $(this).tagin('tags');
+        tags.unshift('');
+        query = $(this).tagin('inputs').join(' ').replace(/\s+/g, ' ') + tags.join(' #');
+        $('#tags7-output').text(query);
+    })
+    .tagin('tags', ['javascript', 'php']).tagin('inputs', ['OOP tutorial']);</code></pre>
+
+    <h2>Overflowing</h2>
+    <input type="text" id="tags6" value="here is a lot of tags here to see how input behaves when overflowing">
+
+        <pre class="example"><code>$('#tags6')
+    .tagin()
+    .data('tagin').element.width(300);</code></pre>
+
+</div>
+
+</div>
+  </body>
+</html>

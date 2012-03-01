@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>jQuery Tagin plugin</title>
+
+    <!-- include jQuery, jQuery UI -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" ></script>
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/sunny/jquery-ui.css">
+
+    <!-- include tagin library -->
+    <script type="text/javascript" src="src/jquery.tagin.js"></script>
+    <link rel="stylesheet" type="text/css" href="src/jquery.tagin.css">
+
+    <!-- theme swither - only for purpose of demos -->
+    <script type="text/javascript" src="http://jqueryui.com/themeroller/themeswitchertool/"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script>
+    $(document).ready(function(){
+        $('#switcher').themeswitcher({
+            height: 500,
+            loadTheme: 'sunny'
+        });
+
+        $('input#tags').tagin({
+            availableTags: ['C++', 'PHP', 'Python', 'Java', 'JavaScript', 'Ruby']
+        });
+    });
+    </script>
+  </head>
+  <body>
+<div id="main">
+
+<div id="header">
+    <ul id="menu">
+        <li class="active"><a href="index.html">Home</a></li>
+        <li><a href="examples.html">Examples</a></li>
+        <li><a href="doc.html">Documentation</a></li>
+        <li><a href="#">Download</a></li>
+    </ul>
+    <h1>jQuery&nbsp;&nbsp;Tagin</h1>
+</div>
+
+<div id="content">
+
+<p class="intro">Simple jQuery Tag Input plugin with advanced features.</p>
+<h2>Features</h2>
+
+<ul>
+    <li>uses jQuery UI themes
+
+    </li>
+    <li>autocomplete</li>
+    <li>open source (MIT license)</li>
+    <li>advanced features
+        <p class="details">
+            autoresize, tag transformations, input character restrictions,<br>
+            allow tags only from autocomplete, cursor navigation between tags
+        </p>
+    </li>
+    <li>cross browser
+        <p class="details">
+            tested in Chrome, Firefox, Opera and Internet Explorer 6 7 8
+        </p>
+    </li>
+    <!-- browser testing -->
+</ul>
+
+<h2>Demo</h2>
+
+    <p>Try the plugin for yourself, type some text and press tab key to create new tag.<br>
+    Try to type <em>PHP, Python, Java, JavaScript</em> to see auto-completion in action.<br>
+    Navigate wit left and right arrow key between tags.<br>
+    Press backspace or delete to remove tags.</p>
+
+    <input type="text" id="tags" value="C++ Ruby">
+
+    <p><span class="switcher-label">Try to choose different themes:&nbsp;</span><span id="switcher"></span></p>
+    <br style="clear:both">
+
+
+    <p>See more <a href="examples.html">examples</a> of advanced usage and <a href="doc.html">documentation</a> of all available options.</p>
+
+<h2>Download</h2>
+
+<h2>Other plugins</h2>
+
+<p>If this plugin doesn't fit your taste (please let me know why), you can try different ones from other authors:</p>
+
+
+<ul>
+<li><a href="http://aehlke.github.com/tag-it/">jQuery Tag-it!</a> - simple jQuery UI compatible plugin</li>
+<li><a href="http://textextjs.com/">jQuery TextExt</a> - advanced plugin with lots of features and modules</li>
+<li><a href="http://documentcloud.github.com/visualsearch/">VisualSearch.js</a> - interesting plugin for faceted search input</li>
+<li><a href="http://jquery.webspirited.com/2011/02/jquery-tagit-a-jquery-tagging-plugin/">jQuery Tagit</a> - another plugin</li>
+<li><a href="http://xoxco.com/projects/code/tagsinput/">jQuery Tags Input Plugin</a> - yet another plugin</li>
+</ul>
+
+<p>I wish to thank here to Tag-it and Visualsearch authors for inspiration and some code snippets.</p>
+
+<div/>
+
+</div>
+  </body>
+</html>
