@@ -518,7 +518,15 @@ TagInput.prototype = {
         }
 
         // autoresize input based on value
-        if (this.widthTester && this.widthTesterVal !== (this.widthTesterVal = val)) {
+        if (this.widthTesterVal !== (this.widthTesterVal = val)) {
+            this.resize(val);
+        }
+    },
+
+    resize: function(val) {
+        if (this.widthTester) {
+            val = (val !== undefined) ? val : this.inputElement.val();
+
             // Enter new content into widthTester
             var escaped = val.replace(/&/g, '&amp;').replace(/\s/g,'&nbsp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             this.widthTester.html(escaped);
@@ -526,7 +534,7 @@ TagInput.prototype = {
             // Calculate new width + whether to change
             var testerWidth = this.widthTester.width()+this.minWidth;
 
-            input.width(testerWidth);
+            this.inputElement.width(testerWidth);
         }
     }
 };
