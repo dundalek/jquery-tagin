@@ -144,7 +144,7 @@ TagComponent.prototype = {
         }
     },
 
-    createTag: function(val, tagInput) {
+    createTag: function(val, tagInput, options) {
         // apply transformation function
         val = this._transformTag($.trim(val));
 
@@ -159,8 +159,12 @@ TagComponent.prototype = {
         } else if (typeof(tagInput) === 'number') {
             idx = tagInput;
         } else {
+            if (tagInput) {
+                options = tagInput;
+            }
             idx = this.items.length-1;
         }
+        options = options || {};
 
         var item = new this.TagInput(this);
         item.tag(val);
@@ -172,18 +176,25 @@ TagComponent.prototype = {
 
         if (tagInput instanceof this.TagInput) {
             var term = this._extractLastTerm(tagInput.input());
-            tagInput.input(term[0]);
-            this._switchFocus(item);
+            tagInput.input(term[0], options.silent);
+            this._switchFocus(item); // never fires event
         }
-        this.trigger('tag-created', val);
-        this.trigger('change');
+        if (!options.silent) {
+            this.trigger('tag-created', val);
+            this.trigger('change');
+        }
 
         return true;
     },
 
-    removeTag: function(item, offset) {
+    removeTag: function(item, offset, options) {
         var idx = -1;
+        if (typeof(offset) !== 'number') {
+            options = offset;
+            offset = undefined;
+        }
         offset = offset || 0;
+        options = options || {};
 
         // handle parameters and determine which tag to remove
         if (typeof(item) === 'number') {
@@ -208,22 +219,28 @@ TagComponent.prototype = {
                 position = itemVal.length;
             itemVal += item.input();
             itemVal = itemVal.replace(/\s+$/, '');
-            this.items[idx-1].input(itemVal);
+            this.items[idx-1].input(itemVal, options.silent);
             setCaretPosition(this.items[idx-1].inputElement[0], position);
         }
 
-        this.trigger('tag-removed');
-        this.trigger('change');
+        if (!options.silent) {
+            this.trigger('tag-removed');
+            this.trigger('change');
+        }
 
         this.domRemove(item);
     },
 
-    tags: function(val, tagInput) {
+    tags: function(val, tagInput, options) {
         if (val === undefined) { // getter
             return $.map(this.items.slice(1), function(x) {return x.tag();});
         } else if (val instanceof Array) { // setter
+            if (!(tagInput instanceof this.TagInput)) {
+                options = tagInput;
+                tagInput = undefined;
+            }
             if (!tagInput) {
-                this.clear();
+                this.clear(options);
             }
 
             var offset = 0,
@@ -231,7 +248,7 @@ TagComponent.prototype = {
             idx = idx !== -1 ? idx : this.items.length-1;
 
             for (var i = 0, len = val.length; i < len; i++) {
-                offset += this.createTag(val[i], idx+offset) ? 1 : 0;
+                offset += this.createTag(val[i], idx+offset, options) ? 1 : 0;
             }
 
             if (tagInput) {
@@ -240,41 +257,46 @@ TagComponent.prototype = {
         }
     },
 
-    inputs: function(val) {
+    inputs: function(val, options) {
+        options = options || {};
         if (val === undefined) { // getter
             return $.map(this.items, function(x) {return x.input();});
         } else { //setter
             var i, value;
+            if (typeof(val) === 'string') {
+                val = [val];
+            }
             for (i = 0; i < this.items.length-1; i++) {
                 value = i < val.length ? val[i] : '';
-                this.items[i].input(value);
+                this.items[i].input(value, options.silent);
             }
             // truncate the rest of inputs if too many given
-            this.items[i].input(val.slice(i).join(''));
+            this.items[i].input(val.slice(i).join(''), options.silent);
         }
     },
 
-    clear: function() {
+    clear: function(options) {
+        options = options || {};
         // clear all tags and inputs
         this.element.children(':gt(0)').remove();
         var item = this.items[0];
         this.items = [item];
         if (item.input() !== '') {
-            item.input(''); // triggers change
-        } else {
+            item.input('', options.silent);
+        } else if (!options.silent){
             this.trigger('change');
         }
     },
 
-    blur: function() {
+    blur: function(options) {
         $.each(this.items, function() {
-            this.inputElement.trigger('blur');
+            this.inputElement.trigger('blur', options && options.silent);
         });
     },
 
-    focus: function() {
+    focus: function(options) {
         // focus the last input
-        this.items[this.items.length-1].inputElement.focus();
+        this.items[this.items.length-1].inputElement.trigger('focus', options && options.silent);
     },
 
     trigger: function(event) {
@@ -417,12 +439,12 @@ TagInput.prototype = {
         }
     },
 
-    input: function(val) {
+    input: function(val, silent) {
         if (val === undefined) { // getter
             return this.inputElement.val();
         } else { // setter
             this.inputElement.val(val);
-            this.onChange();
+            this.onChange(undefined, silent);
             return this;
         }
     },
@@ -508,7 +530,7 @@ TagInput.prototype = {
         }
 
         // input changed - trigger change
-        if (this.component.options.allowTextInput && this._input !== (this._input = input.val())) {
+        if (!explicit && this.component.options.allowTextInput && this._input !== (this._input = input.val())) {
             this.component.trigger('change');
         }
         // pass events to main component

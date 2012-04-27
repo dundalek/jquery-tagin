@@ -78,34 +78,37 @@
 
     <h2>Methods</h2>
 
-    <pre class="sample"><code>createTag(string)
+    <pre class="sample"><code>createTag(string [, options])
     $('#selector').tagin('createTag', 'abc');
+    $('#selector').tagin('createTag', 'abc', {silent: true}); // do not fire change events
 
-removeTag(string or number)
+removeTag(string or number [, options])
     $('#selector').tagin('removeTag', 'abc');
     $('#selector').tagin('removeTag', 0); // remove first tag
 
-clear // remove all tags and inputs
+clear([options]) // remove all tags and inputs
     $('#selector').tagin('clear');
 
-tags(array) // set tags
+tags(array [, options]) // set tags
     $('#selector').tagin('tags', ['foo', 'bar']);
 
 tags // get assigned tags
     var assigned = $('#selector').tagin('tags');
     // tags will be ['foo', 'bar']
 
-inputs(array) // set input values
+inputs(array [, options]) // set input values
     $('#selector').tagin('inputs', ['text']);
 
 inputs // get input values
     $('#selector').tagin('inputs');
 
-focus // focus input
+focus([options]) // focus input
     $('#selector').tagin('focus');
 
-blur // blur input
+blur([options]) // blur input
     $('#selector').tagin('blur');</code></pre>
+
+    <p>To suppress firing events when changing state, pass <code>{silent: true}</code> as options argument.</p>
 
     <h2>Events</h2>
     <p><p>
