@@ -119,6 +119,25 @@ keydown
 keypress
 keyup</code></pre>
 
+    <h2>Customization</h2>
+    <p>Plugin consists of two main classes: <code>TagComponent</code> and <code>TagInput</code>. Main component <code>TagComponent</code> contains array of <code>TagInput</code>s. <code>TagInput</code> is the basic block and consists of tag label and &lt;input&gt; element.<p>
+
+    <p>To customize how elements are represented and handled in DOM, override component methods <code>domCreate</code>, <code>domAdd</code>, <code>domRemove</code> and <code>TagInput.domCreate</code>.<p>
+
+    <pre class="sample"><code>// globally for all instances:
+$.ui.tagin.prototype.domCreate = function() {
+    // ... custom code ...
+};
+
+// for one specific instance:
+$('#selector').data('tagin').domCreate = function() {
+    // ... custom code ...
+};
+
+// overriding TagInput
+$.ui.tagin.prototype.TagInput.prototype.domCreate = function() {
+    // ... custom code ...
+};</code></pre>
 
 </div>
 

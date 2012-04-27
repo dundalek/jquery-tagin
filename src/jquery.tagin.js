@@ -69,18 +69,7 @@ TagComponent.prototype = {
             this.options.tagSource = this._createTagSourceFunction();
         }
 
-        var tagInput = new TagInput(this);
-        tagInput.tagElement.hide();
-        this.items = [tagInput];
-
-        this.origElement = this.element;
-        this.origElement.hide();
-
-        this.element = $('<ul>')
-            .addClass('tagin ui-widget ui-widget-content ui-corner-all')
-            .append(tagInput.el2)
-            .insertAfter(this.origElement);
-        tagInput._createWidthTester();
+        this.domCreate();
 
         // set initial tags if they are present in input
         var tags = $(this.origElement).val().split(this.options.delimiter);
@@ -120,6 +109,41 @@ TagComponent.prototype = {
         };
     },
 
+    domCreate: function() {
+        var tagInput = new this.TagInput(this);
+        tagInput.tagElement.hide();
+        this.items = [tagInput];
+
+        this.origElement = this.element;
+        this.origElement.hide();
+
+        this.element = $('<ul>')
+            .addClass('tagin ui-widget ui-widget-content ui-corner-all')
+            .append(tagInput.el2)
+            .insertAfter(this.origElement);
+        tagInput._createWidthTester();
+    },
+
+    domAdd: function(item, idx) {
+        var el = this.items[idx].el2;
+        el.after(item.el2)
+        el.after(item.el1);
+    },
+
+    domRemove: function(item) {
+        var removeFn = function() {
+            item.el1.remove();
+            item.el2.remove();
+        };
+
+        if (this.options.animate) {
+            // animate removal
+            item.el1.fadeOut('fast').hide('blind', {direction: 'horizontal'}, 'fast', removeFn).dequeue();
+        } else {
+            removeFn();
+        }
+    },
+
     createTag: function(val, tagInput) {
         // apply transformation function
         val = this._transformTag($.trim(val));
@@ -130,7 +154,7 @@ TagComponent.prototype = {
         }
 
         var idx;
-        if (tagInput instanceof TagInput) {
+        if (tagInput instanceof this.TagInput) {
             idx = $.inArray(tagInput, this.items);
         } else if (typeof(tagInput) === 'number') {
             idx = tagInput;
@@ -138,17 +162,15 @@ TagComponent.prototype = {
             idx = this.items.length-1;
         }
 
-        var item = new TagInput(this);
+        var item = new this.TagInput(this);
         item.tag(val);
 
-        var el = this.items[idx].el2;
-        el.after(item.el2)
-        el.after(item.el1);
+        this.domAdd(item, idx);
 
         this.items.splice(idx+1, 0, item);
         item._createWidthTester();
 
-        if (tagInput instanceof TagInput) {
+        if (tagInput instanceof this.TagInput) {
             var term = this._extractLastTerm(tagInput.input());
             tagInput.input(term[0]);
             this._switchFocus(item);
@@ -168,7 +190,7 @@ TagComponent.prototype = {
             idx = 1+item;
         } if (typeof(item) === 'string') {
             idx = $.inArray(item, this.tags())+1;
-        } else if (item instanceof TagInput) {
+        } else if (item instanceof this.TagInput) {
             idx = $.inArray(item, this.items);
             this._switchFocus(item, offset-1);
         }
@@ -193,17 +215,7 @@ TagComponent.prototype = {
         this.trigger('tag-removed');
         this.trigger('change');
 
-        var removeFn = function() {
-            item.el1.remove();
-            item.el2.remove();
-        };
-
-        if (this.options.animate) {
-            // animate removal
-            item.el1.fadeOut('fast').hide('blind', {direction: 'horizontal'}, 'fast', removeFn).dequeue();
-        } else {
-            removeFn();
-        }
+        this.domRemove(item);
     },
 
     tags: function(val, tagInput) {
@@ -309,35 +321,8 @@ TagInput.prototype = {
     minWidth: 4,
     _create: function() {
         var that = this;
-        // create tag
-        var removeTag = $('<a><span class="text-icon">\xd7</span></a>') // \xd7 is X
-            .addClass('tagin-close')
-            .append($('<span class="ui-icon ui-icon-close">'))
-            .click(function(event) {that.onClickRemove(event)});
 
-        var tagLabel = $('<span class="tagin-label"></span>')
-        var tagElement = $('<li>')
-            .addClass('tagin-tag ui-widget-content ui-state-default ui-corner-all');
-        tagElement
-            .append(tagLabel);
-        tagElement
-            .append(removeTag);
-
-        this.tagLabelElement = tagLabel;
-        this.tagElement = tagElement;
-
-        // create input
-        this._input = '';
-        this.inputElement = $('<input>', {type: 'text', 'class': 'ui-widget-content'});
-        this.inputElement.width(this.minWidth);
-
-        // add it to element
-//         this.element
-//             .append(this.tagElement)
-//             .append(this.inputElement);
-
-        this.el1 = this.tagElement;
-        this.el2 = $('<li class="tagin-input">').append(this.inputElement);
+        this.domCreate();
 
         // register autocomplete
         if (this.component.options.tagSource) {
@@ -362,6 +347,34 @@ TagInput.prototype = {
                 that.onChange(event);
             })
             .on('keyup keypress blur focus change', function(event, explicit) {that.onChange(event, explicit)});
+    },
+
+    domCreate: function() {
+        var that = this;
+        // create tag
+        var removeTag = $('<a><span class="text-icon">\xd7</span></a>') // \xd7 is X
+            .addClass('tagin-close')
+            .append($('<span class="ui-icon ui-icon-close">'))
+            .click(function(event) {that.onClickRemove(event)});
+
+        var tagLabel = $('<span class="tagin-label"></span>')
+        var tagElement = $('<li>')
+            .addClass('tagin-tag ui-widget-content ui-state-default ui-corner-all');
+        tagElement
+            .append(tagLabel);
+        tagElement
+            .append(removeTag);
+
+        this.tagLabelElement = tagLabel;
+        this.tagElement = tagElement;
+
+        // create input
+        this._input = '';
+        this.inputElement = $('<input>', {type: 'text', 'class': 'ui-widget-content'});
+        this.inputElement.width(this.minWidth);
+
+        this.el1 = this.tagElement;
+        this.el2 = $('<li class="tagin-input">').append(this.inputElement);
     },
 
     _createWidthTester: function() {
@@ -601,6 +614,7 @@ function setCaretPosition(ctrl, pos) {
     }
 }
 
+TagComponent.prototype.TagInput = TagInput;
 $.widget('ui.tagin', TagComponent.prototype);
 
 })(jQuery);
