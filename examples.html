@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="http://yandex.st/highlightjs/6.1/styles/github.min.css">
 
     <!-- theme swither - only for purpose of demos -->
-    <script type="text/javascript" src="http://jqueryui.com/themeroller/themeswitchertool/"></script>
+    <script type="text/javascript" src="vendor/Super-Theme-Switcher/jquery.themeswitcher.min.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css">
     <script>
         $(function() {
@@ -26,6 +26,7 @@
             // init theme switcher
             $('#switcher').themeswitcher({
                 height: 500,
+                imgpath: 'vendor/Super-Theme-Switcher/images/',
                 loadTheme: 'sunny',
                 onSelect: function() {
                     // hack to fix input field expanding when changing styles.. this is only for demo purposes, it is not needed in production
