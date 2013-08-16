@@ -39,6 +39,7 @@ ul.tagin li.tagin-tag .tagin-close {
 ul.tagin li.tagin-tag .tagin-close .text-icon {
     display: none;
 }
+ul.tagin .content-input,
 ul.tagin input {
     border: none;
     margin: 0;
@@ -48,4 +49,9 @@ ul.tagin input {
     padding-right: 1px;
     padding-bottom: 0;
     padding-left: 2px;
+}
+
+ul.tagin .content-input {
+    display: inline-block;
+    min-width: 4px;
 }

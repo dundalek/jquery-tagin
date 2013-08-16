@@ -73,8 +73,18 @@
     },
 
     // do animation when removing tag
-    animate: true
+    animate: true,
+    
+    // name of the method to access input value
+    // set to 'text' for content editable mode
+    accessor: 'val'
 });</code></pre>
+
+    <h3>Contenteditable mode</h3>
+    
+    <p>By default the user typing is handled by regular <code>&lt;input&gt;</code> elements. Another way to enable typing is to set <code>contenteditable="true"</code> attribute to an regular element. Contenteditable mode has some advantages over regular inputs. Elements get automatically resized by browser and there is no need for complex custom code. And when you have a lot of tag inputs in your page, you can prerender them on serverside and initialize lazily which is faster.</p>
+    
+    <p>Contenteditable mode is enabled by setting <code>accessor</code> option to <code>text</code>. It is not supported by IE 6 and 7.</p>
 
     <h2>Methods</h2>
 

@@ -1,7 +1,7 @@
 /*
 * jQuery Tagin
 *
-* @version v0.5 (02/2012)
+* @version v0.6 (08/2013)
 *
 * Copyright (C) 2011, Jakub Dundalek
 * Released under the MIT license.
@@ -61,7 +61,11 @@ TagComponent.prototype = {
         },
 
         // do animation when removing tag
-        animate: true
+        animate: true,
+ 
+        // name of the method to access input value
+        // set to 'text' for content editable mode
+        accessor: 'val'
     },
 
     _create: function() {
@@ -94,7 +98,7 @@ TagComponent.prototype = {
     _createTagSourceFunction: function() {
         var that = this;
         return function(search, showChoices) {
-            var term = $.trim(that._extractLastTerm(search.term)[1]);
+            var term = that._transformTag($.trim(that._extractLastTerm(search.term)[1]));
             if (term === '') {
                 showChoices(null);
                 return;
@@ -311,7 +315,7 @@ TagComponent.prototype = {
             var elm = this.items[idx].inputElement;
             item.inputElement.trigger('blur', true);
             elm.trigger('focus', true);
-            setCaretPosition(elm[0], offset <= 0 ? elm.val().length : 0);
+            setCaretPosition(elm[0], offset <= 0 ? elm[this.options.accessor]().length : 0);
         }
     },
 
@@ -392,14 +396,21 @@ TagInput.prototype = {
 
         // create input
         this._input = '';
-        this.inputElement = $('<input>', {type: 'text', 'class': 'ui-widget-content'});
-        this.inputElement.width(this.minWidth);
+        if (this.component.options.accessor === 'val') {
+            this.inputElement = $('<input>', {type: 'text', 'class': 'ui-widget-content'});
+            this.inputElement.width(this.minWidth);
+        } else {
+            this.inputElement = $('<div>', {contenteditable: 'true', 'class': 'ui-widget-content content-input'});
+        }
 
         this.el1 = this.tagElement;
         this.el2 = $('<li class="tagin-input">').append(this.inputElement);
     },
 
     _createWidthTester: function() {
+        if (this.component.options.accessor !== 'val') {
+            return;
+        }
         // needs to be called after tag input is inserted to DOM
         this.widthTester = $('<div>').insertAfter(this.inputElement);
         this._setWidthTesterStyle(this.widthTester);
@@ -441,9 +452,9 @@ TagInput.prototype = {
 
     input: function(val, silent) {
         if (val === undefined) { // getter
-            return this.inputElement.val();
+            return this.inputElement[this.component.options.accessor]();
         } else { // setter
-            this.inputElement.val(val);
+            this.inputElement[this.component.options.accessor](val);
             this.onChange(undefined, silent);
             return this;
         }
@@ -460,7 +471,7 @@ TagInput.prototype = {
                 event.preventDefault();
                 if (this.component.options.allowNewTags) {
                     this.inputElement.autocomplete('close');
-                    var term = this.component._extractLastTerm(this.inputElement.val());
+                    var term = this.component._extractLastTerm(this.inputElement[this.component.options.accessor]());
                     this.component.createTag(term[1], this);
                 }
                 break;
@@ -473,7 +484,7 @@ TagInput.prototype = {
                 break;
             case $.ui.keyCode.RIGHT:
                 position = getCaretPosition(this.inputElement[0]);
-                if (position >= this.inputElement.val().length) {
+                if (position >= this.inputElement[this.component.options.accessor]().length) {
                     event.preventDefault();
                     this.component._switchFocus(this, 1);
                 }
@@ -487,7 +498,7 @@ TagInput.prototype = {
                 break;
             case $.ui.keyCode.DELETE:
                 position = getCaretPosition(this.inputElement[0]);
-                if (position >= this.inputElement.val().length) {
+                if (position >= this.inputElement[this.component.options.accessor]().length) {
                     event.preventDefault();
                     this.component.removeTag(this, 1);
                 }
@@ -501,7 +512,7 @@ TagInput.prototype = {
 
         // blur event and no allowTextInput - remove text from input
         if (event.type === 'blur' && !this.component.options.allowTextInput) {
-            input.val('');
+            input[this.component.options.accessor]('');
         }
 
         // handle chacarters that are not allowed
@@ -512,9 +523,9 @@ TagInput.prototype = {
                 event.preventDefault();
             }
             // filter input (for example when copy&pasted)
-            var val = input.val().match(this.component.options.allowedChars);
-            if (val && (val = val.join('')) !== input.val()) {
-                input.val(val);
+            var val = input[this.component.options.accessor]().match(this.component.options.allowedChars);
+            if (val && (val = val.join('')) !== input[this.component.options.accessor]()) {
+                input[this.component.options.accessor](val);
             }
         }
 
@@ -522,16 +533,19 @@ TagInput.prototype = {
         if (this.component.options.delimiterCreateTag
             && this.component.options.allowNewTags)
         {
-            var splits = input.val().split(this.component.options.delimiter);
+            var splits = input[this.component.options.accessor]().split(this.component.options.delimiter);
             if (splits.length > 1) {
-                input.val('');
+                input[this.component.options.accessor]('');
                 this.component.tags(splits, this);
             }
         }
 
         // input changed - trigger change
-        if (!explicit && this.component.options.allowTextInput && this._input !== (this._input = input.val())) {
-            this.component.trigger('change');
+        if (!explicit && this._input !== (this._input = input.text())) {
+            this.inputElement.autocomplete('search', this._input);
+            if (this.component.options.allowTextInput) {
+                this.component.trigger('change');
+            }
         }
         // pass events to main component
         if (!explicit && event.type && event.type !== 'change') {
@@ -542,10 +556,13 @@ TagInput.prototype = {
     },
 
     _autoresize: function(event) {
+        if (this.component.options.accessor !== 'val') {
+            return;
+        }
         // Auto resize input
         // http://stackoverflow.com/questions/1288297/jquery-auto-size-text-input-not-textarea
         var input = this.inputElement,
-            val = input.val();
+            val = input[this.component.options.accessor]();
 
         // little hack, otherwise autoresize does weird bumping
         if (event.type && event.type !== 'keyup' && !event.isDefaultPrevented() && printable(event)) {
@@ -560,7 +577,7 @@ TagInput.prototype = {
 
     resize: function(val) {
         if (this.widthTester) {
-            val = (val !== undefined) ? val : this.inputElement.val();
+            val = (val !== undefined) ? val : this.inputElement[this.component.options.accessor]();
 
             // Enter new content into widthTester
             var escaped = val.replace(/&/g, '&amp;').replace(/\s/g,'&nbsp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -620,6 +637,10 @@ function getCaretPosition(ctrl) {
     else if (ctrl.selectionStart || ctrl.selectionStart == '0') {
         CaretPos = ctrl.selectionStart;
     }
+    // Contenteditable support
+    else if (window.getSelection) {
+        CaretPos = window.getSelection().focusOffset;
+    }
     return (CaretPos);
 }
 
@@ -633,6 +654,10 @@ function setCaretPosition(ctrl, pos) {
         range.moveEnd('character', pos);
         range.moveStart('character', pos);
         range.select();
+    }
+    // Contenteditable support
+    else if (window.getSelection) {
+        window.getSelection().collapse(ctrl, pos);
     }
 }
 
