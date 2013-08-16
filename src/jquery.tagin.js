@@ -130,7 +130,7 @@ TagComponent.prototype = {
 
     domAdd: function(item, idx) {
         var el = this.items[idx].el2;
-        el.after(item.el2)
+        el.after(item.el2);
         el.after(item.el1);
     },
 
@@ -372,7 +372,9 @@ TagInput.prototype = {
                 that.onKeydown(event);
                 that.onChange(event);
             })
-            .on('keyup keypress blur focus change', function(event, explicit) {that.onChange(event, explicit)});
+            .on('keyup keypress blur focus change', function(event, explicit) {
+                that.onChange(event, explicit);
+            });
     },
 
     domCreate: function() {
@@ -381,9 +383,11 @@ TagInput.prototype = {
         var removeTag = $('<a><span class="text-icon">\xd7</span></a>') // \xd7 is X
             .addClass('tagin-close')
             .append($('<span class="ui-icon ui-icon-close">'))
-            .click(function(event) {that.onClickRemove(event)});
+            .click(function(event) {
+                that.onClickRemove(event);
+            });
 
-        var tagLabel = $('<span class="tagin-label"></span>')
+        var tagLabel = $('<span class="tagin-label"></span>');
         var tagElement = $('<li>')
             .addClass('tagin-tag ui-widget-content ui-state-default ui-corner-all');
         tagElement
@@ -477,7 +481,7 @@ TagInput.prototype = {
                 break;
             case $.ui.keyCode.LEFT:
                 position = getCaretPosition(this.inputElement[0]);
-                if (position == 0) {
+                if (position === 0) {
                     event.preventDefault();
                     this.component._switchFocus(this, -1);
                 }
@@ -491,7 +495,7 @@ TagInput.prototype = {
                 break;
             case $.ui.keyCode.BACKSPACE:
                 position = getCaretPosition(this.inputElement[0]);
-                if (position == 0) {
+                if (position === 0) {
                     event.preventDefault();
                     this.component.removeTag(this, 0);
                 }
@@ -518,8 +522,8 @@ TagInput.prototype = {
         // handle chacarters that are not allowed
         if (this.component.options.allowedChars instanceof RegExp) {
             // do not insert character when key is pressed
-            if (event.type && event.type === 'keypress'
-                && printable(event) && !String.fromCharCode(event.which).match(this.component.options.allowedChars)) {
+            if (event.type && event.type === 'keypress' && printable(event) &&
+                !String.fromCharCode(event.which).match(this.component.options.allowedChars)) {
                 event.preventDefault();
             }
             // filter input (for example when copy&pasted)
@@ -530,8 +534,8 @@ TagInput.prototype = {
         }
 
         // create tags from input (delimiter key pressed or copy&paste containing delimiter characters)
-        if (this.component.options.delimiterCreateTag
-            && this.component.options.allowNewTags)
+        if (this.component.options.delimiterCreateTag &&
+            this.component.options.allowNewTags)
         {
             var splits = input[this.component.options.accessor]().split(this.component.options.delimiter);
             if (splits.length > 1) {
