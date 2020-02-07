@@ -5,17 +5,17 @@
     <title>jQuery Tagin plugin: Examples</title>
 
     <!-- include jQuery, jQuery UI -->
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" ></script>
-    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/sunny/jquery-ui.css">
+    <script type="text/javascript" src="vendor/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/jquery-ui.min.js" ></script>
+    <link rel="stylesheet" type="text/css" href="vendor/jquery-ui.css">
 
     <!-- include tagin library -->
     <script type="text/javascript" src="src/jquery.tagin.js"></script>
     <link rel="stylesheet" type="text/css" href="src/jquery.tagin.css">
 
     <!-- syntax highlighting - only for purpose of demos -->
-    <script src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
-    <link rel="stylesheet" href="http://yandex.st/highlightjs/6.1/styles/github.min.css">
+    <script src="vendor/highlight.min.js"></script>
+    <link rel="stylesheet" href="vendor/github.min.css">
 
     <!-- theme swither - only for purpose of demos -->
     <script type="text/javascript" src="vendor/Super-Theme-Switcher/jquery.themeswitcher.min.js"></script>
@@ -122,7 +122,7 @@ $('#tags6')
         <li><a href="index.html">Home</a></li>
         <li class="active"><a href="examples.html">Examples</a></li>
         <li><a href="doc.html">Documentation</a></li>
-        <li><a href="http://github.com/dundalek/jquery-tagin/zipball/master">Download</a></li>
+        <li><a href="https://github.com/dundalek/jquery-tagin/zipball/master">Download</a></li>
     </ul>
     <h1>jQuery&nbsp;&nbsp;Tagin</h1>
 </div>
@@ -146,7 +146,7 @@ $('input#tags1').tagin({
     <pre class="sample"><code>$('input#tags1').tagin({
     tagSource: function(term, callback) {
         // example ajax call
-        $.get('http://somesite.com?serch='+term, function(data) {
+        $.get('https://somesite.com?serch='+term, function(data) {
             // return data to the autocomplete component
             callback(data);
         });
